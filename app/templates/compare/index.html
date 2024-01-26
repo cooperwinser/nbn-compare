@@ -1,0 +1,158 @@
+{% extends "compare/base.html" %}
+
+{% block content %}
+<!-- Navigation -->
+<div class="border-b border-tertiary">
+    <nav class="max-w-screen-xl mx-auto py-4 flex flex-row justify-between text-secondary">
+        <ul class="flex flex-row items-center font-bold">
+            <li class="flex flex-row items-center">
+                <img src="{{ url_for('static', filename='dist/img/logo.png') }}">
+                <span class="text-xs leading-3 bg-tertiary rounded py-0.5 px-2 ml-2">v1</span>
+            </li>
+            <li>
+                <a href="#" class="pl-4 text-secondary">Home</a>
+            </li>
+            <li>
+                <a class="pl-4 text-tertiary-text cursor-not-allowed">API</a>
+            </li>
+        </ul>
+        <ul class="flex flex-row items-center gap-1.5">
+            <li>
+                <a href="#">
+                    <img src="{{ url_for('static', filename='dist/img/email.png') }}" class="border border-tertiary rounded p-0.5 hover:bg-tertiary transition">
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+    <!-- Main -->
+    <main class="max-w-screen-xl mx-auto px-8 pt-2 text-secondary">
+
+        <!-- Table Filters -->
+        <div class="flex flex-row justify-between">
+            <div id="filters">
+                <!-- Provider -->
+                <select name="provider" hx-target="#plans-table-body" hx-trigger="change" hx-get="/compare/filter" hx-vals hx-include="[id='filters']" class="bg-primary rounded outline outline-1 outline-tertiary border-r-4 border-transparent text-sm font-semibold mr-3 w-36 p-2">
+                    <option selected value="">Provider</option>
+                    {% for provider in providers %}
+                    <option value="{{ provider.provider_name }}">{{ provider.display_name }}</option>
+                    {% endfor %}
+                </select>
+
+                <!-- Product/Plan -->
+                <select name="product" hx-target="#plans-table-body" hx-trigger="change" hx-get="/compare/filter" hx-vals hx-include="[id='filters']" class=" bg-primary rounded outline outline-1 outline-tertiary border-r-4 border-transparent text-sm font-semibold mr-3 w-36 p-2">
+                    <option selected value="">Plan</option>
+                    {% for product in products %}
+                    <option value="{{ product.product_name }}">{{ product.product_name }}</option>
+                    {% endfor %}
+                </select>
+
+                <!-- Product/Plan -->
+                <select name="promotion" hx-target="#plans-table-body" hx-trigger="change" hx-get="/compare/filter" hx-vals hx-include="[id='filters']" class=" bg-primary rounded outline outline-1 outline-tertiary border-r-4 border-transparent text-sm font-semibold w-36 p-2">
+                    <option selected value="">Promotion</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                </select>
+            </div>
+            <div>
+                <!-- Sort By -->
+                <select name="sort" class=" bg-primary rounded outline outline-1 outline-tertiary border-r-4 border-transparent text-sm font-semibold w-36 p-2">
+                    <option selected value="">Sort By</option>
+                    <option value="price">Price</option>
+                    <option value="promotion_price">Promotion Price</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="overflow-x-auto">
+            <table class="text-md text-left w-full mt-2 min-w-table">
+                <thead>
+                    <tr class="text-md border-tertiary border">
+                        <th scope="col" class="py-2 pl-6">
+                            Provider
+                        </th>
+                        <th scope="col" class="py-2">
+                            Plan
+                        </th>
+                        <th scope="col" class="py-2">
+                            Price
+                        </th>
+                        <th scope="col" class="py-2">
+                            Promotion
+                        </th>
+                        <th scope="col" class="py-2 text-right"></th>
+                    </tr>
+                </thead>
+                <tbody id="plans-table-body" hx-swap="outerHTML">
+                    {% for plan in plans %}
+                    <tr class="border-tertiary border h-16 font-semibold">
+                        <!-- Provider Logo -->
+                        <td scope="row">
+                            {% if plan.provider.display_name %}
+                            <!-- {{ plan.provider.display_name }} -->
+                            <img src="{{ url_for('static', filename='dist/img/' + plan.provider.provider_name + '.png') }}" alt="{{ plan.provider.display_name }} Logo" class="inline-block w-24 max-h-12 object-contain ml-6">
+                            {% endif %}
+                        </td>
+                        <!-- Product/Plan -->
+                        <td scope="row" class="leading-5">
+                            {% if plan.product %}
+                            {{ plan.product }}<br><span class="text-tertiary-text">Pronto</span> <!-- TODO: Change this to plan name -->
+                            {% endif %}
+                        </td>
+                        <!-- Price -->
+                        <td scope="row" class="leading-5">
+                            {% if plan.price %}
+                            ${{ "%.2f"|format(plan.price|float) }}<br><span class="text-tertiary-text">/month</span>
+                            {% endif %}
+                        </td>
+                        <!-- Promotion -->
+                        <td scope="row" class="leading-5">
+                            {% if plan.promotion.price and plan.promotion.length %}
+                            ${{ "%.2f"|format(plan.promotion.price|float) }}/month<br><span class="text-tertiary-text">for <span class="font-bold">{{ plan.promotion.length }}</span> months</span>
+                            {% else %}
+                            &#x2715;
+                            {% endif %}
+                        </td>
+                        <!-- View Button -->
+                        <td scope="row" class="text-right">
+                            <a href="{{ plan.provider.website }}" target="_blank" class="mr-6">
+                                <button class="border-tertiary border py-2 px-4 hover:bg-tertiary rounded transition-all duration-300">
+                                    View
+                                </button>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Providers List -->
+        <div class="pt-8">
+            <h2 class="font-bold">Compare nbn® internet plans from the following providers</h2>
+            <div class="grid xl:grid-cols-12 lg:grid-cols-8 md:grid-cols-6 sm:grid-cols-5 grid-cols-4">
+                {% for provider in providers %}
+                <div class="flex items-center mx-4">
+                    <img src="{{ url_for('static', filename='dist/img/' + provider.provider_name + '.png') }}" alt="{{ provider.display_name }} Logo" class="w-24 max-h-12 object-contain">
+                </div>
+                {% endfor %}
+            </div>
+        <div> 
+
+        <!-- Footer -->
+        <footer class="pt-8 pb-4">
+            <div class="flex items-center text-center text-sm ">
+                <p class="flex items-center text-center mx-auto">Made with
+                    <svg class="mx-1" width="16px" height="16px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 9.1371C2 14 6.01943 16.5914 8.96173 18.9109C10 19.7294 11 20.5 12 20.5C13 20.5 14 19.7294 15.0383 18.9109C17.9806 16.5914 22 14 22 9.1371C22 4.27416 16.4998 0.825464 12 5.50063C7.50016 0.825464 2 4.27416 2 9.1371Z" fill="#fe251b"/></svg>
+                <a href="https://cooperwinser.com">by <span class="font-bold">Cooper Winser</span></a></p>
+            </div>
+            <div>
+                <p class="text-sm text-center">This website is not affiliated with nbn® or any listed providers.</p>
+                <p class="text-sm text-center">All logos are the copyright of their respective companies.</p>
+            </div>
+        </footer>
+    </main>
+</div>
+{% endblock %}

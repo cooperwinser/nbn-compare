@@ -1,0 +1,41 @@
+{% block content %}
+{% for plan in plans %}
+<tr class="border-tertiary border h-16 font-semibold">
+    <!-- Provider Logo -->
+    <td scope="row">
+        {% if plan.provider.display_name %}
+        <!-- {{ plan.provider.display_name }} -->
+        <img src="{{ url_for('static', filename='dist/img/' + plan.provider.provider_name + '.png') }}" alt="{{ plan.provider.display_name }} Logo" class="inline-block w-24 max-h-12 object-contain ml-6">
+        {% endif %}
+    </td>
+    <!-- Product/Plan -->
+    <td scope="row" class="leading-5">
+        {% if plan.product %}
+        {{ plan.product }}<br><span class="text-tertiary-text">Pronto</span> <!-- TODO: Change this to plan name -->
+        {% endif %}
+    </td>
+    <!-- Price -->
+    <td scope="row" class="leading-5">
+        {% if plan.price %}
+        ${{ "%.2f"|format(plan.price|float) }}<br><span class="text-tertiary-text">/month</span>
+        {% endif %}
+    </td>
+    <!-- Promotion -->
+    <td scope="row" class="leading-5">
+        {% if plan.promotion.price and plan.promotion.length %}
+        ${{ "%.2f"|format(plan.promotion.price|float) }}/month<br><span class="text-tertiary-text">for <span class="font-bold">{{ plan.promotion.length }}</span> months</span>
+        {% else %}
+        &#x2715;
+        {% endif %}
+    </td>
+    <!-- View Button -->
+    <td scope="row" class="text-right">
+        <a href="{{ plan.provider.website }}" target="_blank" class="mr-6">
+            <button class="border-tertiary border py-2 px-4 hover:bg-tertiary rounded transition-all duration-300">
+                View
+            </button>
+        </a>
+    </td>
+</tr>
+{% endfor %}
+{% endblock %}
