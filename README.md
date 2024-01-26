@@ -2,6 +2,7 @@
 
 ## Overview
 This web app is designed to help users compare pricing information from various NBN internet service providers. It utilizes Flask as the web framework, Supabase as the backend database, and Tailwind CSS for styling.
+![App Screenshot](https://i.imgur.com/Je2IQOo.png)
 
 ## Features
 - Scrapes data from NBN internet service provider websites and APIs to obtain pricing information.
@@ -26,6 +27,7 @@ This web app is designed to help users compare pricing information from various 
 - requests==2.31.0
 - python-dotenv==1.0.0
 - httpx==0.25.2
+- beautifulsoup4==4.12.3
 
 ### Installation
 1. Clone the repository.
